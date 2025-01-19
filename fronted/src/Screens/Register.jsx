@@ -1,11 +1,14 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import axios from '../config/axios'
 import { useNavigate } from 'react-router-dom'
+import { UserContext } from '../context/User.context'
 
 const Register = () => {
 
 const [email, setemail] = useState('')
 const [password, setpassword] = useState('')
+
+const {setUser} = useContext(UserContext)
 
 const navigate = useNavigate()
 
@@ -14,6 +17,10 @@ function submitHandler(e) {
     axios.post('/users/register', {email, password
     }).then(res => {
       console.log(res.data)
+
+      localStorage.setItem('token', res.data.token)
+      setUser(res.data.user)
+
       navigate('/')
     }).catch(err => {
       console.log(err.response.data)

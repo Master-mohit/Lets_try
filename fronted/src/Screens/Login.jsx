@@ -1,12 +1,15 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import axios from '../config/axios'
 import { Navigate, useNavigate } from 'react-router-dom'
+import { UserContext } from '../context/User.context'
 
 const Login = () => {
 
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+
+  const {setUser} = useContext(UserContext)
 
   const navigate = useNavigate();
 
@@ -17,6 +20,9 @@ const Login = () => {
 
     }).then(res => {
       console.log(res.data)
+      localStorage.setItem('token', res.data.token)
+      setUser(res.data.user)
+      
       navigate('/')
     }).catch(err => {
       console.log(err.response.data)
