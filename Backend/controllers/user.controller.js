@@ -16,6 +16,8 @@ export const createUserController = async (req, res) => {
 
         const token = await user.generateJWT();
 
+        delete  user._doc.password;
+
         res.status(201).json({ user, token });
     } catch (error) {
         res.status(400).send(error.message);
@@ -51,6 +53,8 @@ export const loginController = async (req, res) => {
 
         const token = await user.generateJWT();
 
+        delete  user._doc.password;
+
 
         res.status(200).json({ user, token });
 
@@ -71,7 +75,6 @@ export const profileController = async (req, res) => {
 
 }
 
-
 export const logoutController = async (req, res) => {
     try {
 
@@ -89,3 +92,5 @@ export const logoutController = async (req, res) => {
         res.status(400).send(err.message);
     }
 }
+
+
