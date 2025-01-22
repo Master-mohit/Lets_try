@@ -1,9 +1,11 @@
-import mongoose from 'mongoose';
-import { validationResult } from 'express-validator';
+import projectModel from '../models/project.model.js';
 import * as projectService from '../services/project.service.js';
 import userModel from '../models/user.model.js';
+import { validationResult } from 'express-validator';
+
 
 export const createProject = async (req, res) => {
+
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -11,48 +13,43 @@ export const createProject = async (req, res) => {
     }
 
     try {
+
         const { name } = req.body;
         const loggedInUser = await userModel.findOne({ email: req.user.email });
+        const userId = loggedInUser._id;
 
-        if (!loggedInUser) {
-            return res.status(404).json({ message: 'User not found' });
-        }
+        const newProject = await projectService.createProject({ name, userId });
 
-        const newProject = await projectService.createProject({
-            name,
-            userId: loggedInUser._id
-        });
+        res.status(201).json(newProject);
 
-        return res.status(201).json({
-            message: 'Project created successfully',
-            project: newProject
-        });
     } catch (err) {
-        console.error('Error creating project:', err);
-        return res.status(500).json({ error: err.message });
+        console.log(err);
+        res.status(400).send(err.message);
     }
-};
 
 
-export const getAllProjects = async (req, res) => {
+
+}
+
+export const getAllProject = async (req, res) => {
     try {
-        const loggedInUser = await userModel.findOne({ email: req.user.email });
 
-        if (!loggedInUser) {
-            return res.status(404).json({ message: 'User not found' });
-        }
+        const loggedInUser = await userModel.findOne({
+            email: req.user.email
+        })
 
-        const allUserProjects = await projectService.getAllProjectBYUserId(
-            loggedInUser._id.toString()
-        );
+        const allUserProjects = await projectService.getAllProjectByUserId({
+            userId: loggedInUser._id
+        })
 
         return res.status(200).json({
             projects: allUserProjects
-        });
+        })
+
     } catch (err) {
-        console.error('Error fetching projects:', err);
-        return res.status(500).json({ error: err.message });
+        console.log(err)
+        res.status(400).json({ error: err.message })
     }
-};
+}
 
 

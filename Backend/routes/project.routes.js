@@ -3,7 +3,6 @@ import { body } from 'express-validator';
 import * as projectController from '../controllers/project.controller.js';
 import * as authMiddleWare from '../middleware/auth.middleware.js';
 
-
 const router = Router();
 
 
@@ -15,9 +14,9 @@ router.post('/create',
 
 router.get('/all',
     authMiddleWare.authUser,
-    projectController.getAllProjects
+    projectController.getAllProject
 )
 
 
 
-export default router;  
+export default router;

@@ -1,6 +1,5 @@
 import express from 'express';
 import morgan from 'morgan';
-// This imports the morgan middleware, which is a logging tool that logs details about incoming HTTP requests (e.g., method, URL, status).
 import connect from './db/db.js';
 import userRoutes from './routes/user.routes.js';
 import projectRoutes from './routes/project.routes.js';
