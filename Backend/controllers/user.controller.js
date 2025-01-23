@@ -85,7 +85,6 @@ export const logoutController = async (req, res) => {
             message: 'Logged out successfully'
         });
 
-
     } catch (err) {
         console.log(err);
         res.status(400).send(err.message);
