@@ -41,14 +41,14 @@ const Home = () => {
   }, []);
 
   return (
-    <main className="p-8 bg-gray-50 min-h-screen">
+    <main className="p-8 bg-gray-900 min-h-screen text-white">
       {/* Projects Section */}
       <div className="projects">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-700">Your Projects</h1>
+          <h1 className="text-2xl font-bold text-gray-200">Your Projects</h1>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow-md flex items-center gap-2 font-medium"
+            className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-lg shadow-md flex items-center gap-2 font-medium"
           >
             <span>Create New Project</span>
             <i className="ri-add-line text-lg"></i>
@@ -59,17 +59,18 @@ const Home = () => {
           {project.map((pro) => (
             <div
               key={pro._id}
-              onClick={
-                 () => navigate("/project", { 
-                state: pro
-               })} 
-              className="hover:shadow-lg hover:scale-105 transition-transform bg-white p-6 border border-gray-200 rounded-lg shadow-sm cursor-pointer"
+              onClick={() => navigate("/project", { state: pro })}
+              className="hover:shadow-lg hover:scale-105 transition-transform bg-gray-800 p-6 border border-gray-700 rounded-lg shadow-sm cursor-pointer"
             >
-              
-              <div className="mt-4 text-sm text-gray-600  items-center gap-2">
-              <h2 className="text-lg font-semibold text-gray-800 mb-2">{pro.name}</h2>
-                <i className="ri-user-add-line text-gray-500"></i>
-                Collaborators: <span className="font-medium">{pro.users.length}</span>
+              <div className="mt-4 text-sm text-gray-400 items-center gap-2">
+                <h2 className="text-lg font-semibold text-gray-100 mb-2">
+                  {pro.name}
+                </h2>
+                <i className="ri-user-add-line text-gray-400"></i>
+                Collaborators:{" "}
+                <span className="font-medium text-gray-300">
+                  {pro.users.length}
+                </span>
               </div>
             </div>
           ))}
@@ -79,16 +80,20 @@ const Home = () => {
       {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-            <h2 className="text-xl font-bold text-gray-700 mb-6">Create New Project</h2>
+          <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
+            <h2 className="text-xl font-bold text-gray-200 mb-6">
+              Create New Project
+            </h2>
             <form onSubmit={createProject}>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-600">Project Name</label>
+                <label className="block text-sm font-medium text-gray-400">
+                  Project Name
+                </label>
                 <input
                   onChange={(e) => setProjectName(e.target.value)}
                   value={projectName}
                   type="text"
-                  className="mt-2 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="mt-2 w-full px-4 py-2 bg-gray-700 border border-gray-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Enter project name"
                   required
                 />
@@ -96,14 +101,14 @@ const Home = () => {
               <div className="flex justify-end gap-4">
                 <button
                   type="button"
-                  className="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-700 rounded-lg"
+                  className="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded-lg"
                   onClick={() => setIsModalOpen(false)}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg"
                 >
                   Create
                 </button>
