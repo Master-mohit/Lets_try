@@ -18,21 +18,20 @@ const [project, setProject] = useState(projectData.project || {});
 
 
 
+  const handleUserClick = (id) => {
+    setSelectedUserId(prevSelectedUserId => {
+        const newSelectedUserId = new Set(prevSelectedUserId);
+        if (newSelectedUserId.has(id)) {
+            newSelectedUserId.delete(id);
+        } else {
+            newSelectedUserId.add(id);
+        }
 
-  function handleUserClick(userId) {
-    setSelectedUserId((prev) => {
-      const newSelection = new Set(prev); // Copy previous set
-  
-      // Toggle the userId: If present, remove; if not, add
-      if (newSelection.has(userId)) {
-        newSelection.delete(userId); // Remove user if clicked again
-      } else {
-        newSelection.add(userId); // Add user if clicked first time
-      }
-  
-      return newSelection; // Return the updated set
+        return newSelectedUserId;
     });
-  }
+
+
+}
   
 
   function addCollaborators() {
@@ -43,7 +42,7 @@ const [project, setProject] = useState(projectData.project || {});
   
     // Convert Set to array before sending to the backend
     axios
-      .put("/projects/add-user", {
+      . put("/projects/add-user", {
         projectId: projectData._id,
         users: Array.from(selectedUserId), // Send only selected users
       })
@@ -63,21 +62,18 @@ const [project, setProject] = useState(projectData.project || {});
   
 
 
+
   useEffect(() => {
-    axios.get(`/projects/get-project/${location.state?.project?._id}`).then(res => {
-      console.log(res.data); // Check the response structure
-      setProject(res.data.project);
-    }).catch(err => {
-      console.log("Error fetching project:", err);
-    });
-  
+    axios.get(`/projects/get-project/${location.state.project._id}`).then(res => {
+        console.log(res.data.project)
+        setProject(res.data.project)
+    })
     axios.get('/users/all').then(res => {
-      console.log(res.data); // Check if users are being fetched correctly
-      setUsers(res.data.users);
+        setUsers(res.data.users)
     }).catch(err => {
-      console.log("Error fetching users:", err);
-    });
-  }, []);
+        console.log(err)
+    })
+}, [])
   
 
   return (
@@ -127,18 +123,13 @@ const [project, setProject] = useState(projectData.project || {});
             </header>
             <div className="users-list flex flex-col gap-2 mb-4 max-h-96 overflow-auto">
                  {users.map(user => (
-             <div
-      key={user._id}
-      className={`user cursor-pointer hover:bg-gray-700 ${
-        selectedUserId.has(user._id) ? "bg-blue-600" : ""
-      } p-2 flex gap-2 items-center rounded-lg`}
-      onClick={() => handleUserClick(user._id)}
-    >
-      <div className="aspect-square relative rounded-full w-10 h-10 flex items-center justify-center text-white bg-gray-600">
-        <i className="ri-user-fill"></i>
-      </div>
-      <h1 className="font-semibold text-lg text-white">{user.username}</h1>
-    </div>
+       <div key={user.id} className={`user cursor-pointer hover:bg-slate-700 ${Array.from(selectedUserId).indexOf(user._id) != -1 ? 'bg-slate-200' : ""} p-2 flex gap-2 items-center`} onClick={() => handleUserClick(user._id)}>
+       <div className='aspect-square relative rounded-full w-fit h-fit flex items-center justify-center p-5 text-white bg-slate-600'>
+           <i className="ri-user-fill absolute"></i>
+       </div>
+       <h1 className='font-semibold text-lg'>{user.email}</h1>
+   </div>
+     
                 ))}
               </div>
 
