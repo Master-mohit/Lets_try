@@ -4,37 +4,37 @@ import axios from "../config/axios";
 
 const Project = () => {
   const location = useLocation();
-// const projectData = location.state || {};
-// console.log("Project data from location:", projectData); // Check project data
-
-console.log("Location State:", location.state);
-console.log("Project ID:", location.state?.project?._id);
-
-  const [project, setProject] = useState(location.state.project); // Define project state
+  const projectData = location.state || {}; // Fix project data retrieval
+  console.log("Project data from location:", projectData);
+  console.log("Project ID:", projectData?._id); // Now should log correctly
+  
+  const [project, setProject] = useState(projectData); // Ensure correct initial state
   const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [users, setUsers] = useState([]); // Define users state
   const [selectedUserId, setSelectedUserId] = useState(new Set());
 
-
-
+  console.log("Project Data:", project); // Check entire project object
+console.log("Users:", project.users); // Check only users array
 
 
 
   function handleUserClick(userId) {
     setSelectedUserId((prev) => {
-      const newSelection = new Set(prev); // Copy previous set
+      const newSelection = new Set(prev); // Copy previous state
   
-      // Toggle the userId: If present, remove; if not, add
       if (newSelection.has(userId)) {
-        newSelection.delete(userId); // Remove user if clicked again
+        newSelection.delete(userId); // Remove user if already selected
       } else {
-        newSelection.add(userId); // Add user if clicked first time
+        newSelection.add(userId); // Add user if not selected
       }
   
-      return newSelection; // Return the updated set
+      console.log('Updated selected users:', Array.from(newSelection)); // Debug log
+      return newSelection; // Return new Set instance
     });
   }
+  
+  
   
 
   function addCollaborators() {
@@ -42,7 +42,6 @@ console.log("Project ID:", location.state?.project?._id);
       console.log("Invalid data:", projectData?._id, selectedUserId);
       return;
     }
-  
     // Convert Set to array before sending to the backend
     axios
       .put("/projects/add-user", {
@@ -66,19 +65,18 @@ console.log("Project ID:", location.state?.project?._id);
 
 
   useEffect(() => {
-    axios.get(`/projects/get-project/${location.state?.project?._id}`).then(res => {
-      console.log(res.data); // Check the response structure
-      setProject(res.data.project);
-    }).catch(err => {
-      console.log("Error fetching project:", err);
-    });
+    if (location.state?.project?._id) {
+      axios.get(`/projects/get-project/${location.state.project._id}`)
+        .then(res => {
+          console.log(res.data.project);
+          setProject(res.data.project || { users: [] });
+        })
+        .catch(err => console.log(err));
+    }
   
-    axios.get('/users/all').then(res => {
-      console.log(res.data); // Check if users are being fetched correctly
-      setUsers(res.data.users);
-    }).catch(err => {
-      console.log("Error fetching users:", err);
-    });
+    axios.get('/users/all')
+      .then(res => setUsers(res.data.users))
+      .catch(err => console.log(err));
   }, []);
   
 
@@ -129,29 +127,27 @@ console.log("Project ID:", location.state?.project?._id);
             <i className="ri-close-fill"></i>
           </button>
         </header>
+        {project.users && project.users.map(user => {
+  console.log(user); // Check the full user object
+  return (
+    <div className="user cursor-pointer hover:bg-slate-700 p-2 flex gap-2 items-center">
+      <div className='aspect-square rounded-full w-fit h-fit flex items-center justify-center p-5 text-white bg-slate-600'>
+        <i className="ri-user-fill absolute"></i>
+      </div>
+      <h1 className='text-white font-semibold text-lg'>
+        {user.email ? user.email : "No email available"}
+      </h1>
+    </div>
+  );
+})}
 
-                <div className="users flex flex-col gap-2">
-                    {project.users && project.users.map(user => {
-                      return (
-                            <div className="user cursor-pointer hover:bg-slate-200 p-2 flex gap-2 items-center">
-                             <div className='aspect-square rounded-full w-fit h-fit flex items-center justify-center p-5 text-white bg-slate-600'>
-                            <i className="ri-user-fill absolute"></i>
-                            </div>
-                            <h1 className='font-semibold text-lg'>{user.email}</h1>
-                             </div>
-                            )
-                        })}
-                </div>
+
+
 
       </div>
       </aside>
 
      
-
-      {/* <section className="flex-grow flex flex-col items-center justify-center p-8">
-        <h1 className="text-3xl font-bold">{projectData?.name || "Project Name"}</h1>
-        <p className="text-gray-400">Collaborators: {projectData?.users?.length || 0}</p>
-      </section> */}
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
@@ -165,8 +161,10 @@ console.log("Project ID:", location.state?.project?._id);
             <div className="users-list flex flex-col gap-2 mb-4 max-h-96 overflow-auto">
             {users.map(user => (
   <div 
-    key={user._id}  // Use user._id as the unique key
-    className={`user cursor-pointer hover:bg-slate-700 ${Array.from(selectedUserId).indexOf(user._id) !== -1 ? 'bg-slate-500' : ""} p-2 flex gap-2 items-center`} 
+    key={user._id}  
+    className={`user cursor-pointer hover:bg-slate-700 
+      ${selectedUserId.has(user._id) ? 'bg-slate-500' : ""} 
+      p-2 flex gap-2 items-center`} 
     onClick={() => handleUserClick(user._id)}
   >
     <div className='aspect-square relative rounded-full w-fit h-fit flex items-center justify-center p-5 text-white bg-slate-600'>
@@ -175,6 +173,7 @@ console.log("Project ID:", location.state?.project?._id);
     <h1 className='font-semibold text-lg'>{user.email}</h1>
   </div>
 ))}
+
 
               </div>
 
