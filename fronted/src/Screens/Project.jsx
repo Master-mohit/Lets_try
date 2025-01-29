@@ -68,15 +68,20 @@ console.log("Users:", project.users); // Check only users array
     if (location.state?.project?._id) {
       axios.get(`/projects/get-project/${location.state.project._id}`)
         .then(res => {
-          console.log(res.data.project);
+          console.log("Project Data:", res.data.project);
           setProject(res.data.project || { users: [] });
         })
-        .catch(err => console.log(err));
+        .catch(err => console.log("Project Fetch Error:", err));
     }
+  }, [location.state]);
   
+  useEffect(() => {
     axios.get('/users/all')
-      .then(res => setUsers(res.data.users))
-      .catch(err => console.log(err));
+      .then(res => {
+        console.log("Users Data:", res.data.users);
+        setUsers(res.data.users);
+      })
+      .catch(err => console.log("Users Fetch Error:", err));
   }, []);
   
 
@@ -116,7 +121,7 @@ console.log("Users:", project.users); // Check only users array
                     </div>
                 </div>
 
-                <div className={`sidePanel w-[300px] h-full flex flex-col gap-2 bg-gray-800 absolute transition-all ${isSidePanelOpen ? "translate-x-0" : "-translate-x-full"} top-0 z-50`}
+        <div className={`sidePanel w-[320px] h-full flex flex-col gap-2 bg-gray-800 absolute transition-all ${isSidePanelOpen ? "translate-x-0" : "-translate-x-full"} top-0 z-50`}
       >
         <header className="flex justify-between items-center px-4 py-2 bg-gray-700">
           <h1 className="font-semibold text-lg text-gray-100">Collaborators</h1>
@@ -127,23 +132,20 @@ console.log("Users:", project.users); // Check only users array
             <i className="ri-close-fill"></i>
           </button>
         </header>
-        {project.users && project.users.map(user => {
-  console.log(user); // Check the full user object
+
+    {project.users.map(userId => {
+  const userDetails = users.find(u => u._id === userId);
   return (
-    <div className="user cursor-pointer hover:bg-slate-700 p-2 flex gap-2 items-center">
+    <div key={userId} className="user cursor-pointer hover:bg-slate-700 p-2 flex gap-2 items-center">
       <div className='aspect-square rounded-full w-fit h-fit flex items-center justify-center p-5 text-white bg-slate-600'>
         <i className="ri-user-fill absolute"></i>
       </div>
       <h1 className='text-white font-semibold text-lg'>
-        {user.email ? user.email : "No email available"}
+        {userDetails ? userDetails.email : "Unknown User"}
       </h1>
     </div>
   );
 })}
-
-
-
-
       </div>
       </aside>
 
@@ -160,19 +162,19 @@ console.log("Users:", project.users); // Check only users array
             </header>
             <div className="users-list flex flex-col gap-2 mb-4 max-h-96 overflow-auto">
             {users.map(user => (
-  <div 
-    key={user._id}  
-    className={`user cursor-pointer hover:bg-slate-700 
-      ${selectedUserId.has(user._id) ? 'bg-slate-500' : ""} 
+  <  div 
+      key={user._id}  
+      className={`user cursor-pointer hover:bg-slate-700 
+        ${selectedUserId.has(user._id) ? 'bg-slate-500' : ""} 
       p-2 flex gap-2 items-center`} 
-    onClick={() => handleUserClick(user._id)}
+       onClick={() => handleUserClick(user._id)}
   >
-    <div className='aspect-square relative rounded-full w-fit h-fit flex items-center justify-center p-5 text-white bg-slate-600'>
-      <i className="ri-user-fill absolute"></i>
-    </div>
-    <h1 className='font-semibold text-lg'>{user.email}</h1>
-  </div>
-))}
+        <div className='aspect-square relative rounded-full w-fit h-fit flex items-center justify-center p-5 text-white bg-slate-600'>
+         <i className="ri-user-fill absolute"></i>
+        </div>
+         <h1 className='font-semibold text-lg'>{user.email}</h1>
+       </div>
+           ))}
 
 
               </div>
